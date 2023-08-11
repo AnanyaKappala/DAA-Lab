@@ -24,35 +24,33 @@ After Sorting: Content of the output file
 Number of Comparisons: Actual
 Scenario: Best or Worst-case*/
 #include <stdio.h>
-#include<string.h>
-int insertionSort(int arr[], int size) {
-    int comparisons = 0;
 
-    for (int i = 1; i < size; i++) {
+void insertionSort(int arr[], int n, long long *comparisons) {
+    for (int i = 1; i < n; i++) {
         int key = arr[i];
         int j = i - 1;
 
         while (j >= 0 && arr[j] > key) {
+            (*comparisons)++;
             arr[j + 1] = arr[j];
             j--;
-            comparisons++;
         }
-
         arr[j + 1] = key;
     }
-
-    return comparisons;
 }
 
-void displayArray(int arr[], int size) {
-    for (int i = 0; i < size; i++) {
+void printArray(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
 }
 
 int main() {
-    int option;
+    FILE *inputFile, *outputFile;
+    int choice, n, data[500], i;
+    long long comparisons = 0;
+
     do {
         printf("MAIN MENU (INSERTION SORT)\n");
         printf("1. Ascending Data\n");
@@ -60,74 +58,86 @@ int main() {
         printf("3. Random Data\n");
         printf("4. Exit\n");
         printf("Enter option: ");
-        scanf("%d", &option);
+        scanf("%d", &choice);
 
-        if (option >= 1 && option <= 3) {
-            FILE *inputFile;
-            FILE *outputFile;
-            char inputFileName[20], outputFileName[20];
-            int arr[500]; 
-
-            switch (option) {
-                case 1:
-                    strcpy(inputFileName, "inAsce.dat");
-                    strcpy(outputFileName, "outInsAsce.dat");
-                    break;
-                case 2:
-                    strcpy(inputFileName, "inDesc.dat");
-                    strcpy(outputFileName, "outInsDesc.dat");
-                    break;
-                case 3:
-                    strcpy(inputFileName, "inRand.dat");
-                    strcpy(outputFileName, "outInsRand.dat");
-                    break;
-            }
-
-            inputFile = fopen(inputFileName, "r");
-            if (inputFile == NULL) {
-                printf("Error opening input file.\n");
+        switch (choice) {
+            case 1:
+                inputFile = fopen("inAsce.dat", "r");
+                break;
+            case 2:
+                inputFile = fopen("inDesc.dat", "r");
+                break;
+            case 3:
+                inputFile = fopen("inRand.dat", "r");
+                break;
+            case 4:
+                return 0;
+            default:
+                printf("Invalid choice. Please enter a valid option.\n");
                 continue;
-            }
-
-            int size;
-            fscanf(inputFile, "%d", &size);
-
-            for (int i = 0; i < size; i++) {
-                fscanf(inputFile, "%d", &arr[i]);
-            }
-            fclose(inputFile);
-
-            int comparisons = insertionSort(arr, size);
-
-            outputFile = fopen(outputFileName, "w");
-            if (outputFile == NULL) {
-                printf("Error opening output file.\n");
-                continue;
-            }
-
-            for (int i = 0; i < size; i++) {
-                fprintf(outputFile, "%d ", arr[i]);
-            }
-            fclose(outputFile);
-
-            printf("Before Sorting: ");
-            displayArray(arr, size);
-
-            printf("After Sorting: ");
-            displayArray(arr, size);
-
-            printf("Number of Comparisons: %d\n", comparisons);
-            if (comparisons == (size - 1) * size / 2) {
-                printf("Scenario: Best-case\n");
-            } else if (comparisons == (size - 1) * size) {
-                printf("Scenario: Worst-case\n");
-            } else {
-                printf("Scenario: Average-case\n");
-            }
-        } else if (option != 4) {
-            printf("Invalid option.\n");
         }
-    } while (option != 4);
+
+        if (inputFile == NULL) {
+            printf("Error opening input file.\n");
+            return 1;
+        }
+
+        n = 0;
+        while (fscanf(inputFile, "%d", &data[n]) != EOF) {
+            n++;
+        }
+        fclose(inputFile);
+
+        comparisons = 0;
+        insertionSort(data, n, &comparisons);
+
+        switch (choice) {
+            case 1:
+                printf("Ascending Data:\n");
+                break;
+            case 2:
+                printf("Descending Data:\n");
+                break;
+            case 3:
+                printf("Random Data:\n");
+                break;
+        }
+        printArray(data, n);
+        printf("\nNumber of Comparisons: %lld\n", comparisons);
+
+        long long bestCaseComparisons = (n - 1) * n / 2; 
+        long long worstCaseComparisons = bestCaseComparisons + (n - 1); 
+        if (comparisons == bestCaseComparisons) {
+            printf("Scenario: Best-case\n");
+        } else if (comparisons == worstCaseComparisons) {
+            printf("Scenario: Worst-case\n");
+        } else {
+            printf("Scenario: Average-case\n");
+        }
+
+        switch (choice) {
+            case 1:
+                outputFile = fopen("outInsAsce.dat", "w");
+                break;
+            case 2:
+                outputFile = fopen("outInsDesc.dat", "w");
+                break;
+            case 3:
+                outputFile = fopen("outInsRand.dat", "w");
+                break;
+        }
+
+        if (outputFile == NULL) {
+            printf("Error opening output file.\n");
+            return 1;
+        }
+
+        for (i = 0; i < n; i++) {
+            fprintf(outputFile, "%d ", data[i]);
+        }
+        fclose(outputFile);
+
+    } while (1);
 
     return 0;
 }
