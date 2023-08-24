@@ -1,0 +1,8 @@
+Id Name Age Height Weight(pound)
+0 Adarsh Hota 39 77 231
+1 Levi Maier 56 77 129
+2 Priya Kumari 63 78 240
+3 Dorothy Helton 47 72 229
+4 Florence Smith 24 75 171
+5 Erica Anyan 38 73 102
+6 Norma Webster 23 75 145
